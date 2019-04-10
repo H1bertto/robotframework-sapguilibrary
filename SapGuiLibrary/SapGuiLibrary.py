@@ -5,6 +5,7 @@ from pythoncom import com_error
 import robot.libraries.Screenshot as screenshot
 import os
 from robot.api import logger
+import threading
 
 
 class SapGuiLibrary:
@@ -117,6 +118,8 @@ class SapGuiLibrary:
 
         """
         lenstr = len("SAPGUI")
+        if threading.currentThread().getName() != 'MainThread':
+            pythoncom.CoInitialize()
         rot = pythoncom.GetRunningObjectTable()
         rotenum = rot.EnumRunning()
         while True:
@@ -124,7 +127,7 @@ class SapGuiLibrary:
             if not monikers:
                 break
             ctx = pythoncom.CreateBindCtx(0)
-            name = monikers[0].GetDisplayName(ctx, None);
+            name = monikers[0].GetDisplayName(ctx, None)
 
             if name[-lenstr:] == "SAPGUI":
                 obj = rot.GetObject(monikers[0])
